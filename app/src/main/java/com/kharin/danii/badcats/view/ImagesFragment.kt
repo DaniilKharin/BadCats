@@ -5,7 +5,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.Toast
 import androidx.databinding.BindingAdapter
+import androidx.databinding.Observable
+import androidx.databinding.ObservableBoolean
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -35,12 +38,13 @@ class ImagesFragment : Fragment() {
                 )
                 .into(this)
         }
+
         val visibleThreshold = 3
 
         @JvmStatic
         @BindingAdapter("loadListener")
         fun RecyclerView.loadFromUrl(listener: ImagesViewModel.LoadNextPageListener) {
-            this.addOnScrollListener(object : RecyclerView.OnScrollListener(){
+            this.addOnScrollListener(object : RecyclerView.OnScrollListener() {
 
                 override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                     super.onScrolled(recyclerView, dx, dy)
@@ -49,10 +53,22 @@ class ImagesFragment : Fragment() {
                     val totalItemCount = linearLayoutManager.itemCount
                     val lastVisibleItem = linearLayoutManager.findLastVisibleItemPosition()
                     if (totalItemCount <= (lastVisibleItem + visibleThreshold)) {
-                       listener.loadNextPage()
+                        listener.loadNextPage()
                     }
-                }})
+                }
+            })
         }
+    }
+
+    private val errListener = object : Observable.OnPropertyChangedCallback() {
+        override fun onPropertyChanged(sender: Observable?, propertyId: Int) {
+            val err = (sender as? ObservableBoolean)?.get()
+            if (err != null && err){
+                Toast.makeText(context, R.string.loading_err,Toast.LENGTH_LONG).show()
+                sender.set(false)
+            }
+        }
+
     }
 
     private lateinit var viewModel: ImagesViewModel
@@ -71,6 +87,12 @@ class ImagesFragment : Fragment() {
         (activity as MainActivity).appComponent.inject(viewModel)
         binding?.viewModel = viewModel
         viewModel.init()
+        viewModel.loadingErr.addOnPropertyChangedCallback(errListener)
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        viewModel.loadingErr.removeOnPropertyChangedCallback(errListener)
     }
 
 

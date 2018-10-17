@@ -2,21 +2,39 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
     <data>
         <variable name="viewModel" type="com.kharin.danii.badcats.viewmodel.ImagesViewModel"/>
+
+        <import type="android.view.View"/>
     </data>
 
     <FrameLayout android:layout_width="match_parent" android:layout_height="match_parent">
 
 
-            <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/images_recycler"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                    app:items="@{viewModel.favorites}"
-                    app:itemBinding="@{viewModel.favoritesBinding}"
-            >
+        <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/images_recycler"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                app:items="@{viewModel.favorites}"
+                app:itemBinding="@{viewModel.favoritesBinding}"
+        >
 
-            </androidx.recyclerview.widget.RecyclerView>
+        </androidx.recyclerview.widget.RecyclerView>
+
+        <LinearLayout android:layout_width="match_parent"
+                      android:layout_height="match_parent"
+                      android:orientation="vertical"
+                      android:gravity="center"
+        >
+            <TextView
+                    android:id="@+id/empty"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="@string/empty"
+                    android:visibility="@{viewModel.favorites.size == 0 ?View.VISIBLE:View.GONE}"
+            />
+
+        </LinearLayout>
 
     </FrameLayout>
 

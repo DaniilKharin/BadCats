@@ -33,6 +33,7 @@ class ImagesViewModel() : ViewModel() {
     private var disposable: Disposable? = null
 
     var loading: ObservableBoolean = ObservableBoolean(false)
+    var loadingErr: ObservableBoolean = ObservableBoolean(false)
 
     private val downloadClickListener = object : DownloadClickListenerInterface {
         override fun download(url: String) {
@@ -42,11 +43,11 @@ class ImagesViewModel() : ViewModel() {
             else
                 rxPermissions
                     .request(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                    .subscribe({download(uri)},{},{})
+                    .subscribe({ download(uri) }, {}, {})
         }
     }
 
-    private val toFavoriteListener = object : ToFavoriteListener{
+    private val toFavoriteListener = object : ToFavoriteListener {
         override fun toFavorite(item: ImageItemViewModel) {
             if (item.isFavorite.get())
                 favorites.remove(imagesRepository.removeFromFavorite(item.image.id))
@@ -57,7 +58,7 @@ class ImagesViewModel() : ViewModel() {
 
     }
 
-    private val removeFavoriteListener = object : RemoveFavoriteListener{
+    private val removeFavoriteListener = object : RemoveFavoriteListener {
         override fun removeFavorite(favorite: Favorite) {
             favorites.remove(imagesRepository.removeFromFavorite(favorite.id))
         }
@@ -80,7 +81,7 @@ class ImagesViewModel() : ViewModel() {
         }
     }
 
-    fun initFavorites(){
+    fun initFavorites() {
         favorites.clear()
         favorites.addAll(imagesRepository.getFavorites())
     }
@@ -89,9 +90,12 @@ class ImagesViewModel() : ViewModel() {
     var items: ObservableList<ImageItemViewModel> = ObservableArrayList()
     var favorites: ObservableList<Favorite> = ObservableArrayList()
     val itemBinding = ItemBinding.of<ImageItemViewModel>(BR.imageViewModel, R.layout.image_item)
-        .bindExtra(BR.downloadListener, downloadClickListener).bindExtra(BR.toFavoriteListener,toFavoriteListener)!!
-    val favoritesBinding =  ItemBinding.of<Favorite>(BR.favorite, R.layout.favorite_item)
-        .bindExtra(BR.downloadListener, downloadClickListener).bindExtra(BR.removeFavoriteListener,removeFavoriteListener)!!
+        .bindExtra(BR.downloadListener, downloadClickListener).bindExtra(BR.toFavoriteListener, toFavoriteListener)!!
+    val favoritesBinding = ItemBinding.of<Favorite>(BR.favorite, R.layout.favorite_item)
+        .bindExtra(BR.downloadListener, downloadClickListener).bindExtra(
+            BR.removeFavoriteListener,
+            removeFavoriteListener
+        )!!
 
     fun onRefresh() {
         disposable?.dispose()
@@ -106,7 +110,10 @@ class ImagesViewModel() : ViewModel() {
                 items.clear()
                 items.addAll(images)
             },
-            { loading.set(false) },
+            {
+                loading.set(false)
+                loadingErr.set(true)
+            },
             { loading.set(false) })
 
     fun loadNext(): Disposable? = imagesRepository.loadNextPageImagesFlowable()
@@ -114,10 +121,13 @@ class ImagesViewModel() : ViewModel() {
         ?.doOnTerminate { loading.set(false) }
         ?.subscribe(
             { images -> items.addAll(images) },
-            { loading.set(false) },
+            {
+                loading.set(false)
+                loadingErr.set(true)
+            },
             { loading.set(false) })
 
-    fun download(uri : Uri){
+    fun download(uri: Uri) {
         downloadManager.enqueue(
             DownloadManager.Request(uri)
                 .setAllowedNetworkTypes(DownloadManager.Request.NETWORK_WIFI or DownloadManager.Request.NETWORK_MOBILE)
