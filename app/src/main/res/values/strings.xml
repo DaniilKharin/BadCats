@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">BadCats</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="favorites_cats_title">Любимые плохие котики</string>
+    <string name="cats_title">Плохие котики</string>
+</resources>

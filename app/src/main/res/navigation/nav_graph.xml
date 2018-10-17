@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/nav_graph" app:startDestination="@id/imagesFragment">
+
+    <fragment android:id="@+id/imagesFragment" android:name="com.kharin.danii.badcats.view.ImagesFragment"
+              android:label="@string/cats_title"/>
+    <fragment android:id="@+id/favoritesFragment"
+              android:name="com.kharin.danii.badcats.view.FavoritesFragment"
+              android:label="@string/favorites_cats_title"
+    />
+</navigation>

@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:android="http://schemas.android.com/apk/res/android" xmlns:tools="http://schemas.android.com/tools">
+    <data>
+        <variable
+                name="favorite"
+                type="com.kharin.danii.badcats.model.Favorite"
+        />
+        <variable name="downloadListener"
+                  type="com.kharin.danii.badcats.viewmodel.ImagesViewModel.DownloadClickListenerInterface"
+        />
+        <variable name="removeFavoriteListener"
+                  type="com.kharin.danii.badcats.viewmodel.ImagesViewModel.RemoveFavoriteListener"/>
+
+    </data>
+
+    <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            app:cardUseCompatPadding="true"
+
+            app:cardCornerRadius="10dp">
+        <LinearLayout android:layout_width="match_parent"
+                      android:layout_height="match_parent"
+                      android:orientation="horizontal">
+            <ImageView
+                    android:id="@+id/cat_image"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="10"
+                    app:imageUrl="@{favorite.url}"
+            />
+            <ImageButton
+                    android:id="@+id/to_favorite_button"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="2"
+                    android:src="@drawable/ic_favorite"
+                    android:onClick="@{()->removeFavoriteListener.removeFavorite(favorite)}"
+            />
+            <ImageButton
+                    android:id="@+id/download_btn"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="2"
+                    android:src="@drawable/ic_download"
+                    android:onClick="@{()->downloadListener.download(favorite.url)}"
+            />
+        </LinearLayout>
+
+    </androidx.cardview.widget.CardView>
+
+
+</layout>
